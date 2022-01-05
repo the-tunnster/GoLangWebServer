@@ -7,9 +7,6 @@ import (
 	"net/http"
 )
 
-
-
-
 //Is the the repository type
 type Repository struct{
 	App *config.AppConfig
@@ -40,4 +37,5 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request){
 	render.RenderTemplate(w, "about.page.tmpl", &models.TemplateData{
 		StringMap: stringMap,
 	})
+
 }
