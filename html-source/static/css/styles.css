@@ -1,0 +1,31 @@
+.myFooter{
+    height: 5em;
+    background-color: #163b65;
+    margin-top: 1.5em;
+    padding: 1em;
+    color: #FFFFFF;
+    font-size: 80%;
+}
+
+.roomImage{
+    max-width: 50%;
+}
+
+.notie-container {
+    box-shadow: none;
+}
+
+.swal2-html-container {
+    z-index: 10000 !important;
+    justify-content: center;
+    margin: 1em 1.6em .3em;
+    padding: 0;
+    overflow: auto;
+    color: inherit;
+    font-size: 1.125em;
+    font-weight: 400;
+    line-height: normal;
+    text-align: center;
+    word-wrap: break-word;
+    word-break: break-word;
+}
