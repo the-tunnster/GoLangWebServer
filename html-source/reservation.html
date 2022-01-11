@@ -13,12 +13,7 @@
 	<link rel="stylesheet"
 		href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.2.0/dist/css/datepicker-bulma.min.css">
 	<link rel="stylesheet" type="text/css" href="https://unpkg.com/notie/dist/notie.min.css">
-
-	<style>
-		.notie-container {
-			box-shadow: none;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="static/css/styles.css">
 
 </head>
 
@@ -125,7 +120,23 @@
 		})
 
 		document.getElementById("colorButton").addEventListener("click", function () {
-			attention.error({ msg: "Hello World"});
+			let html = `
+				<from id="check-availability-form" action="" method="post" novalidate clas="needs-validation">
+					<div class="row">
+						<div class="col">
+							<div class="row" id="reservation-dates-modal">
+								<div class="col">
+									<input disabled required class="form-control" type="text" name="start" id="start" placeholder="Arrival">
+								</div>
+								<div class="col">
+									<input disabled required class="form-control" type="text" name="end" id="end" placeholder="Departure">
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			`
+			attention.custom({ msg: html, title: "Choose your dates." });
 		})
 
 		const elem = document.getElementById("reservationDates");
@@ -174,8 +185,8 @@
 			}
 
 			let success = function (c) {
-				const{
-					msg=  "",
+				const {
+					msg = "",
 					title = "",
 					footer = "",
 				} = c;
@@ -188,8 +199,8 @@
 			}
 
 			let error = function (c) {
-				const{
-					msg=  "",
+				const {
+					msg = "",
 					title = "",
 					footer = "",
 				} = c;
@@ -201,10 +212,48 @@
 				})
 			}
 
+			async function custom(c) {
+				const {
+					msg = "",
+					title = "",
+				} = c;
+
+				const { value: formValues } = await Swal.fire({
+					title: title,
+					html: msg,
+					backdrop: false,
+					focusConfirm: false,
+					showCancelButton: true,
+					willOpen: () => {
+						const elem = document.getElementById("reservation-dates-modal");
+						const rp = new DateRangePicker(elem, {
+							format: "yyyy-mm-dd",
+							showOnFocus: "true",
+						})
+					},
+					preConfirm: () => {
+						return [
+							document.getElementById('start').value,
+							document.getElementById('end').value
+						]
+					},
+					didOpen: () => {
+						document.getElementById("start").removeAttribute("disabled");
+						document.getElementById("end").removeAttribute("disabled");
+
+					}
+				})
+
+				if (formValues) {
+					Swal.fire(JSON.stringify(formValues))
+				}
+			}
+
 			return {
 				toast: toast,
 				success: success,
 				error: error,
+				custom: custom,
 			}
 		}
 
