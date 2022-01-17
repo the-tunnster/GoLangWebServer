@@ -12,6 +12,7 @@ import (
 )
 
 const portNumber = ":8080"
+
 var app config.AppConfig
 var session *scs.SessionManager
 
@@ -39,12 +40,13 @@ func main(){
 	handlers.NewHandlers(repo)
 	render.NewTemplates(&app)
 
+	log.Println("Starting application on port", portNumber)
+
+
 	srv := &http.Server{
 		Addr: portNumber,
 		Handler: routes(&app),
 	}
-
-	log.Println("Starting application on port", portNumber)
 
 	err = srv.ListenAndServe()
 	if(err!=nil){
