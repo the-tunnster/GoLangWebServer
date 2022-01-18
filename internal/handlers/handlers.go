@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"WebServer/pkg/config"
-	"WebServer/pkg/models"
-	"WebServer/pkg/render"
+	"WebServer/internal/config"
+	"WebServer/internal/models"
+	"WebServer/internal/render"
 	"encoding/json"
 	"fmt"
 	"log"

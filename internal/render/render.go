@@ -1,8 +1,8 @@
 package render
 
 import (
-	"WebServer/pkg/config"
-	"WebServer/pkg/models"
+	"WebServer/internal/config"
+	"WebServer/internal/models"
 	"bytes"
 	"fmt"
 	"log"

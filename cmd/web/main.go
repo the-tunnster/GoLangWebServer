@@ -1,9 +1,9 @@
 package main
 
 import (
-	"WebServer/pkg/config"
-	"WebServer/pkg/handlers"
-	"WebServer/pkg/render"
+	"WebServer/internal/config"
+	"WebServer/internal/handlers"
+	"WebServer/internal/render"
 	"log"
 	"net/http"
 	"time"

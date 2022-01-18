@@ -1,8 +1,8 @@
 package main
 
 import (
-	"WebServer/pkg/config"
-	"WebServer/pkg/handlers"
+	"WebServer/internal/config"
+	"WebServer/internal/handlers"
 	"net/http"
 
 	"github.com/go-chi/chi"
