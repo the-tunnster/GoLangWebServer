@@ -3,7 +3,9 @@ package main
 import (
 	"WebServer/internal/config"
 	"WebServer/internal/handlers"
+	"WebServer/internal/models"
 	"WebServer/internal/render"
+	"encoding/gob"
 	"log"
 	"net/http"
 	"time"
@@ -17,6 +19,7 @@ var app config.AppConfig
 var session *scs.SessionManager
 
 func main(){
+	gob.Register(models.Reservation{})
 
 	app.InProduction = false
 
