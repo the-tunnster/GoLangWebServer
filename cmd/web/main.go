@@ -18,7 +18,29 @@ const portNumber = ":8080"
 var app config.AppConfig
 var session *scs.SessionManager
 
-func main(){
+func main() {
+
+	err := run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("Starting application on port", portNumber)
+
+	srv := &http.Server{
+		Addr:    portNumber,
+		Handler: routes(&app),
+	}
+
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+func run() error {
+
 	gob.Register(models.Reservation{})
 
 	app.InProduction = false
@@ -32,8 +54,9 @@ func main(){
 	app.Session = session
 
 	tc, err := render.CreateTemplateCache()
-	if(err!=nil){
+	if err != nil {
 		log.Fatal("Cannot create template cache : ", err)
+		return err
 	}
 
 	app.TemplateCache = tc
@@ -43,17 +66,6 @@ func main(){
 	handlers.NewHandlers(repo)
 	render.NewTemplates(&app)
 
-	log.Println("Starting application on port", portNumber)
+	return nil
 
-
-	srv := &http.Server{
-		Addr: portNumber,
-		Handler: routes(&app),
-	}
-
-	err = srv.ListenAndServe()
-	if(err!=nil){
-		log.Fatal(err)
-	}
-	
 }
