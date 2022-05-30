@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"text/template"
 	"time"
@@ -24,14 +25,20 @@ var pathToTemplates = "./../../templates"
 
 var functions = template.FuncMap{}
 
-func getRoutes() http.Handler{
+func getRoutes() http.Handler {
 
 	gob.Register(models.Reservation{})
 
 	app.InProduction = false
 
+	infoLog := log.New(os.Stdout, "NFO\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+
+	errorLog := log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
+
 	session = scs.New()
-	session.Lifetime = 24*time.Hour
+	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true
 	session.Cookie.SameSite = http.SameSiteLaxMode
 	session.Cookie.Secure = app.InProduction
@@ -39,7 +46,7 @@ func getRoutes() http.Handler{
 	app.Session = session
 
 	tc, err := CreateTestTemplateCache()
-	if err!=nil{
+	if err != nil {
 		log.Fatal("Couldn't create template cache : ", err)
 	}
 
@@ -71,20 +78,19 @@ func getRoutes() http.Handler{
 	mux.Get("/generals-quarters", Repo.Generals)
 	mux.Get("/majors-suite", Repo.Majors)
 
-
 	fileServer := http.FileServer(http.Dir("./static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
 
 	return mux
 }
 
-func NoSurf(next http.Handler) http.Handler{
+func NoSurf(next http.Handler) http.Handler {
 	csrfHandler := nosurf.New(next)
 
 	csrfHandler.SetBaseCookie(http.Cookie{
 		HttpOnly: true,
-		Path: "/",
-		Secure: app.InProduction,
+		Path:     "/",
+		Secure:   app.InProduction,
 		SameSite: http.SameSiteLaxMode,
 	})
 
@@ -92,34 +98,34 @@ func NoSurf(next http.Handler) http.Handler{
 }
 
 //Loads and saves session on every request
-func SessionLoad(next http.Handler) http.Handler{
+func SessionLoad(next http.Handler) http.Handler {
 	return session.LoadAndSave(next)
 }
 
-func CreateTestTemplateCache() (map[string]*template.Template, error){
+func CreateTestTemplateCache() (map[string]*template.Template, error) {
 
 	myCache := map[string]*template.Template{}
 	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.tmpl", pathToTemplates))
-	if(err!=nil){
+	if err != nil {
 		return myCache, err
 	}
 
-	for _, page := range pages{
+	for _, page := range pages {
 
 		name := filepath.Base(page)
 		ts, err := template.New(name).Funcs(functions).ParseFiles(page)
-		if(err!=nil){
+		if err != nil {
 			return myCache, err
 		}
 
 		matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplates))
-		if(err!=nil){
+		if err != nil {
 			return myCache, err
 		}
 
-		if(len(matches)>0){
+		if len(matches) > 0 {
 			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplates))
-			if(err!=nil){
+			if err != nil {
 				return myCache, err
 			}
 		}

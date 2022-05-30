@@ -3,11 +3,11 @@ package handlers
 import (
 	"WebServer/internal/config"
 	"WebServer/internal/forms"
+	"WebServer/internal/helpers"
 	"WebServer/internal/models"
 	"WebServer/internal/render"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -63,8 +63,9 @@ func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
+
 	if err != nil {
-		log.Println(err)
+		helpers.ServerError(w, err)
 		return
 	}
 
@@ -118,7 +119,8 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 
 	out, err := json.MarshalIndent(resp, "", "    ")
 	if err != nil {
-		log.Println(err)
+		helpers.ServerError(w, err)
+		return
 	}
 
 	w.Header().Set("Contect-Type", "application/json")
@@ -133,11 +135,11 @@ func (m *Repository) Majors(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, r, "majors.page.tmpl", &models.TemplateData{})
 }
 
-func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request){
+func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
 
 	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
-	if !ok{
-		log.Println("Cannot get item from session.")
+	if !ok {
+		m.App.ErrorLog.Println("Cant get error from session.")
 		m.App.Session.Put(r.Context(), "error", "Can't get reservation from session.")
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
@@ -147,7 +149,7 @@ func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request){
 
 	data := make(map[string]interface{})
 	data["reservation"] = reservation
-	
+
 	render.RenderTemplate(w, r, "reservation-summary.page.tmpl", &models.TemplateData{
 		Data: data,
 	})
